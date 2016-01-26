@@ -58,17 +58,28 @@ The camera itself.
 #### `scene`
 Enables building a collection of `stack.gl` geometries and light sources from a list of `objects`, and setting geometries given the current state of all objects on each update, and drawing them to the context.
 
-- `scene.build(objects, styles)` Build scene geometries, light sources, and shaders from the list of `objects` and a `styles` object. Styles should be of the form:
+- `scene.build(objects, styles)` Build scene geometries, light sources, and shaders from the list of `objects` and a `styles` object. Every object should have the following attributes:
 
+```javascript
+{
+	id: 'id',
+	type: 'type',
+	transform: {translation: [5, 1], rotation: 90, scale: 2}
+}
 ```
+
+And styles should be of the form:
+
+```javascript
 {
 	shapes: {
-		type: props
+		type: {}
 	},
 	lights: {
-		type: props
+		type: {}
 	}
 }
+```
 
 - `scene.update(view)` Update any geometries and cameras using the current view and object states.
 
