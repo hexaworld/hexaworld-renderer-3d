@@ -4,6 +4,23 @@ Renderer for hexaworld games that uses stack.gl. Composes with `hexaworld-core` 
 
 [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
 
+### install
+
+Currently in development and not yet published to `npm`. To try it out, first `git clone` [`hexaworld-core`](https://github.com/hexaworld/hexaworld-core) and call
+
+```
+npm link
+```
+
+then `git clone` this repo and call
+
+```
+npm link hexaworld-core
+npm start
+```
+
+to see a demo.
+
 ### example
 
 First construct a `game` using `hexaworld-core`, which just requires a valid `gameloop`, `controller`, and level `schema`. The renderer on the `gameloop` should be a valid `webgl` context.
