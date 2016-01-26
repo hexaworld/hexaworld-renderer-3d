@@ -12,14 +12,12 @@ Currently in development and not yet published to `npm`. To try it out, first `g
 npm link
 ```
 
-then `git clone` this repo and call
+then `git clone` this repo and start a demo by calling
 
 ```
 npm link hexaworld-core
 npm start
 ```
-
-to see a demo.
 
 ### example
 
