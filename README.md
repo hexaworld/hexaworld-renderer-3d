@@ -61,7 +61,7 @@ A valid `hexaworld-core` game. Two attributes of the game are used by the render
 
 ### components
 
-This renderer is built out of two primary components, each of which are quite general and could possibly be moved to separate repos within the `stack.gl` ecosystem. 
+This renderer is built out of two primary components, each of which are quite general and could probably be refactored and/or moved to separate repos within the `stack.gl` ecosystem. 
 
 #### `view` 
 Simple wrapper for different `stack.gl` cameras.
