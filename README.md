@@ -40,23 +40,17 @@ A `webgl` context.
 #### `game`
 A valid `hexaworld-core` game. Two attributes of the game are used by the renderer:
 
-##### `game.objects`
+- `game.objects` A list of all objects defined by the game, each of which has a `type`, `id`, and `transform`. 
 
-A list of all objects defined by the game, each of which has a `type`, `id`, and `transform`. 
-
-##### `game.events`
-
-Events from the game that are used to dynamically update the rendered scene (see `hexaworld-core` for all events).
+- `game.events` Events from the game that are used to dynamically update the rendered scene (see `hexaworld-core` for all events).
 
 ### components
 
 This renderer is built out of two primary components, each of which are quite general and could possibly be moved to separate repos within the `stack.gl` ecosystem. 
 
-#### `view`
-Simple wrapper for different `stack.gl` cameras.
+- `view` Simple wrapper for different `stack.gl` cameras.
 
-##### `view.type`
-Type of camera.
+- `view.type` Type of camera.
 
 ##### `view.camera`
 The camera itself.
@@ -64,17 +58,13 @@ The camera itself.
 #### `scene`
 Constructs a collection of `stack.gl` geometries and light sources from a list of `objects` on initialization, sets geometries given the current state of all objects on each update, and draws geometries.
 
-##### `scene.build(objects, styles)`
-Build scene geometries, light sources, and shaders from the list of objects and styles. Styles should contain a JSON schema for `shapes` and `lights`, each of which maps the object `type` to a set of style attributes.
+- `scene.build(objects, styles)` Build scene geometries, light sources, and shaders from the list of objects and styles. Styles should contain a JSON schema for `shapes` and `lights`, each of which maps the object `type` to a set of style attributes.
 
-##### `scene.update(view)`
-Update any geometries and cameras using the current view and object states.
+- `scene.update(view)` Update any geometries and cameras using the current view and object states.
 
-##### `scene.draw(gl, view)`
-Draw the scene using the given `gl` context and `view`.
+- `scene.draw(gl, view)` Draw the scene using the given `gl` context and `view`.
 
-##### `scene.remove(id)`
-Remove the geometry with the given `id` from the scene.
+- `scene.remove(id)` Remove the geometry with the given `id` from the scene.
 
 ### styling
 
