@@ -42,21 +42,21 @@ A valid `hexaworld-core` game. Two attributes of the game are used by the render
 
 - `game.objects` A list of all objects defined by the game, each of which has a `type`, `id`, and `transform`. 
 
-- `game.events` Events from the game that are used to dynamically update the rendered scene (see `hexaworld-core` for all events).
+- `game.events` Events from the game that are used to dynamically update the rendered scene.
 
 ### components
 
 This renderer is built out of two primary components, each of which are quite general and could possibly be moved to separate repos within the `stack.gl` ecosystem. 
 
-- `view` Simple wrapper for different `stack.gl` cameras.
+#### `view` 
+Simple wrapper for different `stack.gl` cameras.
 
 - `view.type` Type of camera.
 
-##### `view.camera`
-The camera itself.
+- `view.camera` The camera itself.
 
 #### `scene`
-Enables building a collection of `stack.gl` geometries and light sources from a list of `objects`, and setting geometries given the current state of all objects on each update, and drawing them to the context.
+Builds a collection of `stack.gl` geometries and light sources from a list of `objects`, and enables setting geometries given the current state of all objects on each update, and drawing them.
 
 - `scene.build(objects, styles)` Build a scene from a list of `objects` and  `styles`. Every object in the list should have the following attributes:
 
@@ -68,26 +68,30 @@ Enables building a collection of `stack.gl` geometries and light sources from a 
 }
 ```
 
-And styles should map `types` to properties, for both `shapes` and `lights`, in the form:
+And styles should map `types` to properties, for both `shapes` and `lights`, in the form (see below for more details):
 
 ```javascript
 {
 	shapes: {
-		type: {}
+		type1: {},
+		type2: {}
 	},
 	lights: {
-		type: {}
+		type1: {},
+		type2: {}
 	}
 }
 ```
 
-- `scene.update(view)` Update any geometries and cameras using the current view and object states.
+- `scene.update(view)` Update any geometries and cameras using the provided `view` and current object states.
 
 - `scene.draw(gl, view)` Draw the scene using the given `gl` context and `view`.
 
 - `scene.remove(id)` Remove the geometry with the given `id` from the scene.
 
 ### styling
+
+When building a scene, the following styles can be used to easily set attributes on all rendered geometries.
 
 #### `shapes`
 Schema for shape attributes, e.g.
