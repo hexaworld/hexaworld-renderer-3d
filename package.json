@@ -8,32 +8,22 @@
   },
   "browserify": {
     "transform": [
-      "glslify",
-      "brfs"
+      "glslify"
     ]
   },
   "dependencies": {
-    "brfs": "^1.4.3",
     "camelcase": "^2.0.1",
     "canvas-orbit-camera": "^1.0.2",
-    "d3-color": "^0.2.7",
-    "eventemitter2": "^0.4.14",
     "extrude": "^1.0.1",
-    "extrude-polyline": "^1.0.6",
     "eye-vector": "0.0.0",
     "face-normals": "0.0.0",
-    "fastclick": "^1.0.6",
     "gl-geometry": "^2.0.0",
     "gl-mat4": "^1.1.4",
     "gl-shader": "^4.1.1",
     "glsl-diffuse-oren-nayar": "^1.0.2",
     "glsl-fog": "0.0.1",
-    "glsl-specular-gaussian": "^1.0.0",
     "glslify": "^5.0.2",
-    "hex-rgb": "^1.0.0",
     "icosphere": "^1.0.0",
-    "inherits": "~2.0.0",
-    "is-mobile": "^0.2.2",
     "lodash": "^3.10.1",
     "lookat-camera": "^1.0.0",
     "merge-meshes": "^1.0.0",
@@ -42,7 +32,6 @@
     "mesh-reindex": "^1.0.0",
     "normals": "^1.0.1",
     "perspective-camera": "^2.0.1",
-    "transformist": "^1.0.0",
     "unindex-mesh": "^2.0.0"
   },
   "license": "MIT",
@@ -51,8 +40,10 @@
     "url": "git+https://github.com/hexaworld/hexaworld.git"
   },
   "devDependencies": {
-    "budo": "~7.0.0",
     "browserify": "~12.0.0",
+    "budo": "~7.0.0",
+    "crtrdg-keyboard": "^1.0.1",
+    "fastclick": "^1.0.6",
     "standard": "^5.4.1"
   }
 }
