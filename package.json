@@ -8,10 +8,12 @@
   },
   "browserify": {
     "transform": [
-      "glslify"
+      "glslify",
+      "brfs"
     ]
   },
   "dependencies": {
+    "brfs": "^1.4.3",
     "camelcase": "^2.0.1",
     "canvas-orbit-camera": "^1.0.2",
     "d3-color": "^0.2.7",
@@ -29,10 +31,14 @@
     "glsl-specular-gaussian": "^1.0.0",
     "glslify": "^5.0.2",
     "hex-rgb": "^1.0.0",
+    "icosphere": "^1.0.0",
     "inherits": "~2.0.0",
     "is-mobile": "^0.2.2",
     "lodash": "^3.10.1",
     "lookat-camera": "^1.0.0",
+    "merge-meshes": "^1.0.0",
+    "merge-vertices": "^1.0.1",
+    "mesh-combine": "^1.1.0",
     "mesh-reindex": "^1.0.0",
     "normals": "^1.0.1",
     "perspective-camera": "^2.0.1",
