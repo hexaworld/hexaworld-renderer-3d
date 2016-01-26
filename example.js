@@ -43,6 +43,6 @@ var game = require('hexaworld-core')({
   controller: controller
 })
 
-var renderer = require('hexaworld-3d')(game, gl)
+var renderer = require('./index.js')(game, gl)
 
 gameloop.start()

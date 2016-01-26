@@ -1,9 +1,4 @@
 module.exports = {
-  // player: {
-  //   color: [0.9, 0.9, 0.9],
-  //   height: 15
-  // },
-
   cue0: {
     color: [0.87, 0.52, 0.23],
     height: 15

@@ -10,8 +10,6 @@ var extrude = require('extrude')
 var icosphere = require('icosphere')
 var camel = require('camelcase')
 var glslify = require('glslify')
-var shapes = require('../styles/shapes.js')
-var lights = require('../styles/lights.js')
 var fs = require('fs')
 
 
@@ -32,12 +30,12 @@ Scene.prototype.init = function () {
   mat4.perspective(self.proj, Math.PI / 4, self.width / self.height, 0.01, 1000)
 }
 
-Scene.prototype.build = function (objects) {
+Scene.prototype.build = function (objects, styles) {
   var self = this
 
   // set shape attributes on objects
   _.forEach(objects, function (object) { 
-    var attr = shapes[camel(object.type)]
+    var attr = styles.shapes[camel(object.type)]
     _.defaults(object, attr)
   })
 
@@ -62,11 +60,12 @@ Scene.prototype.build = function (objects) {
   })
 
   // collect light sources
-  var light
+  var light, style
   var lights = {colors: [], positions: []}
   _.forEach(objects, function (object) {
-    light = self.buildLight(object)
-    if (light) {
+    style = styles.lights[camel(object.type)]
+    if (style) {
+      light = self.buildLight(object, style)
       lights.colors.push(light.color)
       lights.positions.push(light.position)
     }
@@ -85,7 +84,7 @@ Scene.prototype.build = function (objects) {
   _.filter(objects, ['render', true]).forEach(function (object) {
     object.complex = reindex(unindex(object.complex.positions, object.complex.cells))
     object.geometry = self.buildGeometry(object.complex)
-    object.shader = shaders[shapes[camel(object.type)].shader]
+    object.shader = shaders[object.shader]
     object.move = mat4.create()
   })
 
@@ -94,31 +93,30 @@ Scene.prototype.build = function (objects) {
   self.shaders = shaders
 }
 
-Scene.prototype.buildLight = function (object) {
-  var attr = lights[camel(object.type)]
-  if (!attr) return
-
+Scene.prototype.buildLight = function (object, style) {
   var p = object.points[0]
   return {
-    color: attr.color,
-    position: [p[0], p[1], attr.height]
+    color: style.color,
+    position: [p[0], p[1], style.height]
   }
 }
 
 Scene.prototype.buildSimplicial = function (object) {
-  var attr = shapes[camel(object.type)]
-  
+  var gen = object.generator
   var complex
 
-  if (attr.shape == 'extrusion') {
-    complex = extrude(object.points, {top: attr.top, bottom: attr.bottom})
+  if (gen.type == 'extrusion') {
+    complex = extrude(object.points, {top: gen.top, bottom: gen.bottom})
   }
 
-  if (attr.shape == 'sphere') {
+  if (gen.type == 'sphere') {
     complex = icosphere(0)
     complex.positions = complex.positions.map(function (p) {
       var t = object.points[0]
-      return [p[0] * attr.size + t[0], p[1] * attr.size + t[1], p[2] * attr.size + attr.height]
+      return [
+        p[0] * gen.radius + t[0], 
+        p[1] * gen.radius + t[1], p[2] * gen.radius + gen.height
+      ]
     })
   }
 
