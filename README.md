@@ -56,9 +56,19 @@ This renderer is built out of two primary components, each of which are quite ge
 The camera itself.
 
 #### `scene`
-Constructs a collection of `stack.gl` geometries and light sources from a list of `objects` on initialization, sets geometries given the current state of all objects on each update, and draws geometries.
+Enables building a collection of `stack.gl` geometries and light sources from a list of `objects`, and setting geometries given the current state of all objects on each update, and drawing them to the context.
 
-- `scene.build(objects, styles)` Build scene geometries, light sources, and shaders from the list of objects and styles. Styles should contain a JSON schema for `shapes` and `lights`, each of which maps the object `type` to a set of style attributes.
+- `scene.build(objects, styles)` Build scene geometries, light sources, and shaders from the list of `objects` and a `styles` object. Styles should be of the form:
+
+```
+{
+	shapes: {
+		type: props
+	},
+	lights: {
+		type: props
+	}
+}
 
 - `scene.update(view)` Update any geometries and cameras using the current view and object states.
 
