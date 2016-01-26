@@ -10,8 +10,8 @@ var extrude = require('extrude')
 var icosphere = require('icosphere')
 var camel = require('camelcase')
 var glslify = require('glslify')
-var shapes = require('./shapes.js')
-var lights = require('./lights.js')
+var shapes = require('../styles/shapes.js')
+var lights = require('../styles/lights.js')
 var fs = require('fs')
 
 

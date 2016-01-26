@@ -32,7 +32,6 @@ var gl = canvas.getContext('webgl')
 container.appendChild(canvas)
 
 var gameloop = require('gameloop')({
-  canvas: canvas,
   renderer: gl
 })
 
