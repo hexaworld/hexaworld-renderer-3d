@@ -187,10 +187,10 @@ Scene.prototype.update = function (view) {
   })
 }
 
-Scene.prototype.remove = function () {
-
-  // for objects with the given ids set render: false
-
+Scene.prototype.remove = function (id) {
+  var self = this
+  var object = _.find(self.objects, ['id', id])
+  object.render = false
 }
 
 module.exports = Scene

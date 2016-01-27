@@ -13,7 +13,14 @@ var shapes = {
   player: {
     color: [0.7, 0.7, 0.7],
     fogged: false,
-    generator: {type: 'sphere', height: 8, radius: 2},
+    generator: {type: 'sphere', height: 6, radius: 2},
+  },
+
+  bit: {
+    color: [0.9, 0.9, 0.9],
+    fogged: true,
+    generator: {type: 'sphere', height: 5, radius: 0.8},
+    mergeable: false
   },
 
   cue0: {
