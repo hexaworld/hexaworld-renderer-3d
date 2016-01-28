@@ -15,7 +15,7 @@ var map = {
     {coordinates: [1, 0], paths: [1, 3]},
     {coordinates: [0, -1], paths: [1, 3, 5]},
     {coordinates: [0, -2], paths: [0, 5]},
-    {coordinates: [1, -2], paths: [0, 2], cue: {id: 3}}
+    {coordinates: [1, -2], paths: [0, 2], cue: {id: 3}},
   ]
 }
 
@@ -31,18 +31,16 @@ canvas.width = container.clientWidth
 var gl = canvas.getContext('webgl')
 container.appendChild(canvas)
 
-var gameloop = require('gameloop')({
-  renderer: gl
-})
-
-var controller = require('crtrdg-keyboard')(gameloop)
+var controller = require('crtrdg-keyboard')()
 
 var game = require('hexaworld-core')({
-  schema: schema,
-  gameloop: gameloop, 
+  schema: schema, 
   controller: controller
 })
 
-var renderer = require('./index.js')(game, gl)
+var renderer = require('./index.js')({
+  game: game, 
+  gl: gl
+})
 
-gameloop.start()
+game.start()

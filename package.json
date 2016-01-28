@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "test": "standard",
-    "build": "browserify index.js -o bundle.js",
+    "build": "browserify example.js -o bundle.js",
     "start": "budo example.js:bundle.js --watch"
   },
   "browserify": {
@@ -14,6 +14,7 @@
   "dependencies": {
     "camelcase": "^2.0.1",
     "canvas-orbit-camera": "^1.0.2",
+    "euclidean-distance": "^1.0.0",
     "extrude": "^1.0.1",
     "eye-vector": "0.0.0",
     "face-normals": "0.0.0",
