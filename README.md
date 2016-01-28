@@ -115,19 +115,19 @@ When building a scene, the following styles can be used to easily set attributes
 Schema for shape attributes, e.g.
 
 ```javascript
-color: [0.1, 0.4, 0.2]
-lit: true,
-fog: true,
-hide: true,
-render: true,
-mergeable: true,
-shader: 'flat',
-generator: {type: 'sphere', radius: 5, height: 45}
+color: [0.1, 0.4, 0.2] // material color
+lit: true, // whether to apply lights
+fog: true, // whether to apply fog
+hide: true, // whether to hide
+render: true, // whether to render
+mergeable: true, // whether geometries of this type can be combined
+shader: 'flat', // which shader to use
+generator: {type: 'extrude', bottom: 0, height: 45} // how to construct 3d geometry from point(s)
 ```
 
 #### `lights`
 Schema for light attributes
 ```javascript
-color: [0.9, 0.1, 0.5]
-height: 50
+color: [0.9, 0.1, 0.5] // light color
+height: 50 // height of light
 ```
