@@ -1,6 +1,6 @@
 # hexaworld-renderer-3d
 
-Render hexaworld games using [`stack.gl`](http://stack.gl). Composes with `hexaworld-core` to make a fully rendered and playable game. The gameplay logic of `hexaworld-core` is 2d, but this module renders the world with 3d graphics. 
+Render hexaworld games using [`stack.gl`](http://stack.gl). Composes with [`hexaworld-core`](https://github.com/hexaworld/hexaworld-core) to make a fully rendered and playable game.
 
 [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
 
