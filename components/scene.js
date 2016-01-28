@@ -110,11 +110,11 @@ Scene.prototype.buildSimplicial = function (object) {
   var gen = object.generator
   var complex
 
-  if (gen.type == 'extrusion') {
+  if (gen.type == 'extrude') {
     complex = extrude(object.points, {top: gen.top, bottom: gen.bottom})
   }
 
-  if (gen.type == 'sphere') {
+  if (gen.type == 'icosphere') {
     complex = icosphere(0)
     complex.positions = complex.positions.map(function (p) {
       var t = object.points[0]
