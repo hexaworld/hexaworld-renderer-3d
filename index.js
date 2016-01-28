@@ -18,7 +18,7 @@ module.exports = function (opts) {
   game.on('draw', function () {
     view.update()
     scene.update(view)
-    scene.draw(gl, view)
+    scene.draw()
   })
 
   game.on('consume', function (e) {

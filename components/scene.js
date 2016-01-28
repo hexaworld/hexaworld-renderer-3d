@@ -147,10 +147,10 @@ Scene.prototype.merge = function (objects) {
   return merged
 }
 
-Scene.prototype.draw = function (gl, view) {
+Scene.prototype.draw = function () {
   var self = this
 
-  gl.enable(gl.DEPTH_TEST)
+  self.gl.enable(self.gl.DEPTH_TEST)
 
   _.forEach(self.objects, function (object) {
     if (object.render) {
@@ -174,7 +174,7 @@ Scene.prototype.draw = function (gl, view) {
         object.shader.uniforms.color = object.color
         object.shader.uniforms.lightPositions = self.lights.positions
         object.shader.uniforms.lightColors = self.lights.colors
-        object.geometry.draw(gl.TRIANGLES)
+        object.geometry.draw(self.gl.TRIANGLES)
         object.geometry.unbind()
       }
     }
