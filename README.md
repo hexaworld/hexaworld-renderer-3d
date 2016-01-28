@@ -52,9 +52,11 @@ A valid `hexaworld-core` game. The renderer uses `game.objects`, which is a list
 A `webgl` context.
 
 ### components
-This renderer is built out of two primary components, each of which are quite general and could probably be refactored and/or moved to separate repos within the `stack.gl` ecosystem. 
+This renderer is composed from two primary components.
 
 #### `view` 
+(NOTE: this is mainly for debugging purposes and can be dropped in the future)
+
 Simple wrapper for different `stack.gl` cameras.
 
 - `view.type` Type of camera.
@@ -62,7 +64,10 @@ Simple wrapper for different `stack.gl` cameras.
 - `view.camera` The camera itself.
 
 #### `scene`
-Builds a collection of `stack.gl` geometries and light sources from a list of `objects`, and enables updating them (through `remove` and `move` events) and drawing them to the `gl` context.
+
+(NOTE: this is very general and might make one or more nice standalone `stack.gl` modules)
+
+Builds a collection of `stack.gl` geometries and light sources from a list of `objects`, and enables updating them (through events like `remove` and `move`) and drawing them to the `gl` context.
 
 - `scene.build(objects, styles)` Build a scene from a list of `objects` and  `styles`. Every object in the list should have the following attributes:
 
