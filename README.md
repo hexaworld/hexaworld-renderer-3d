@@ -69,7 +69,7 @@ Simple wrapper for different `stack.gl` cameras.
 
 Builds a collection of `stack.gl` geometries and light sources from a list of `objects`, and enables updating them (through events like `remove` and `move`) and drawing them to the `gl` context.
 
-To construct a scene, just pass a `gl` context.
+To initialize a scene, just pass a `gl` context.
 
 ```javascript
 var scene = Scene(gl)
