@@ -50,10 +50,7 @@ Scene.prototype.build = function (objects, styles) {
     var filtered = _.filter(objects, ['type', type])
     var canmerge = _.every(filtered, 'mergeable') & filtered.length > 1
     if (canmerge) {
-      var ids = _.map(filtered, 'id')
-      var combined = combine(_.map(filtered, 'complex'))
-      var merged = {complex: combined, id: 'merged:' + ids.join(',')}
-      _.defaults(merged, filtered[0])
+      var merged = self.merge(filtered)
       _.forEach(filtered, function (object) {object.render = false})
       objects.push(merged)
     }
@@ -134,7 +131,15 @@ Scene.prototype.buildGeometry = function (complex) {
   return geometry
 }
 
-Scene.prototype.draw = function (gl) {
+Scene.prototype.merge = function (objects) {
+  var ids = _.map(objects, 'id')
+  var combined = combine(_.map(_.filter(objects, 'render'), 'complex'))
+  var merged = {complex: combined, id: 'merged: ' + objects[0].type}
+  _.defaults(merged, objects[0])
+  return merged
+}
+
+Scene.prototype.draw = function (gl, view) {
   var self = this
 
   gl.enable(gl.DEPTH_TEST)
