@@ -4,14 +4,14 @@ varying vec3 vposition;
 varying vec3 vnormal;
 
 uniform float lit;
-uniform float fogged;
+uniform float fog;
 uniform vec3 eye;
 uniform vec3 color;
 uniform vec3 lightPositions[LIGHTCOUNT];
 uniform vec3 lightColors[LIGHTCOUNT];
 
 #pragma glslify: orenn = require('glsl-diffuse-oren-nayar')
-#pragma glslify: fog = require('glsl-fog')
+#pragma glslify: fogger = require('glsl-fog')
 
 float calcLightAttenuation(float lightDistance, float cutoffDistance, float decayExponent) {
   if (decayExponent > 0.0) {
@@ -31,7 +31,7 @@ void main() {
 	float diff;
 	float attn;
 
-	result = (fogged > 0.0) ? mix(result, vec3(0.0392, 0.0392, 0.0392), fog(length(viewdiff), 0.01)) :  result;
+	result = (fog > 0.0) ? mix(result, vec3(0.0392, 0.0392, 0.0392), fogger(length(viewdiff), 0.01)) :  result;
 
 	for (int i = 0; i < LIGHTCOUNT; i++) { 
 		ldiff = lightPositions[i] - vposition;
