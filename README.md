@@ -88,20 +88,12 @@ var scene = Scene(gl)
 }
 ```
 
-And styles should map `type` to a sett of properties, for both `shapes` and `lights`, in the form (see below for more details):
+And styles should map `type`s to properties, in the form:
 
 ```javascript
 {
-	shapes: {
-		type0: {},
-		type1: {},
-		...
-	},
-	lights: {
-		type0: {},
-		type1: {},
-		...
-	}
+	shapes: {type0: {}, type1: {},	...},
+	lights: {type0: {}, type1: {},	...}
 }
 ```
 
@@ -125,7 +117,8 @@ Schema for shape attributes, e.g.
 ```javascript
 color: [0.1, 0.4, 0.2]
 lit: true,
-fogged: true,
+fog: true,
+hide: true,
 render: true,
 mergeable: true,
 shader: 'flat',
