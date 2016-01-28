@@ -10,7 +10,7 @@ var extrude = require('extrude')
 var icosphere = require('icosphere')
 var camel = require('camelcase')
 var glslify = require('glslify')
-var fs = require('fs')
+var distance = require('euclidean-distance')
 
 
 function Scene(gl) {
@@ -23,7 +23,6 @@ function Scene(gl) {
 
 Scene.prototype.init = function () {
   var self = this
-
   this.proj = mat4.create()
   this.view = mat4.create()
   this.eye = new Float32Array(3)
@@ -42,6 +41,9 @@ Scene.prototype.build = function (objects, styles) {
   // build a simplicial complex for each object
   _.filter(objects, ['render', true]).forEach(function (object) { 
     object.complex = self.buildSimplicial(object)
+    object.centroid = object.complex.positions.reduce(function (x, y) {
+      return [x[0] + y[0], x[1] + y[1], x[2] + y[2]]
+    }).map(function (p) {return p / object.complex.positions.length})
   })
 
   // iterate over unique types and merge meshes
@@ -68,6 +70,12 @@ Scene.prototype.build = function (objects, styles) {
     }
   })
   lights.count = lights.positions.length
+  lights.distances = {}
+  objects.forEach(function (object) {
+    lights.distances[object.id] = lights.positions.map(function (l) {
+      return distance(object.centroid, l)
+    }).reduce(function (x, y) { return Math.min(x, y)})
+  })
 
   // create shaders
   var shaders = {
@@ -146,56 +154,58 @@ Scene.prototype.draw = function (gl, view) {
 
   _.forEach(self.objects, function (object) {
     if (object.render) {
-      object.geometry.bind(object.shader)
-      object.shader.uniforms.proj = self.proj
-      object.shader.uniforms.view = self.view
-      object.shader.uniforms.eye = self.eye
-      object.shader.uniforms.move = object.move
-      object.shader.uniforms.lit = object.lit 
-      object.shader.uniforms.fogged = object.fogged
-      object.shader.uniforms.color = object.color
-      object.shader.uniforms.lightPositions = self.lights.positions
-      object.shader.uniforms.lightColors = self.lights.colors
-      object.geometry.draw(gl.TRIANGLES)
-      object.geometry.unbind()
+      var passed = true
+      if (object.hide) {
+        var p = object.centroid
+        var e = self.eye
+        var d = distance(p, e)
+        if (d > 200) {
+          passed = self.lights.distances[object.id] < 50
+        } 
+      }
+      if (passed) {
+        object.geometry.bind(object.shader)
+        object.shader.uniforms.proj = self.proj
+        object.shader.uniforms.view = self.view
+        object.shader.uniforms.eye = self.eye
+        object.shader.uniforms.move = object.move
+        object.shader.uniforms.lit = object.lit 
+        object.shader.uniforms.fog = object.fog
+        object.shader.uniforms.color = object.color
+        object.shader.uniforms.lightPositions = self.lights.positions
+        object.shader.uniforms.lightColors = self.lights.colors
+        object.geometry.draw(gl.TRIANGLES)
+        object.geometry.unbind()
+      }
     }
   })
-
 }
 
 Scene.prototype.update = function (view) {
   var self = this
-
-  var t, r
-
-  if (view.type == 'orbit') {
-    view.camera.tick()
-  }
-
-  if (view.type == 'lookat') {
-    t = _.find(self.objects, ['id', 'player']).transform.translation
-    view.camera.target = [t[0], t[1] + 20, 1]
-    view.camera.position = [t[0], t[1] - 60, 30]
-  }
-
   view.camera.view(self.view)
   eye(self.view, self.eye)
-  
-  _.forEach(self.objects, function (object) {
-    if (object.props.moveable) {
-      t = object.transform.translation
-      r = object.transform.rotation / 180 * Math.PI
-      mat4.identity(object.move)
-      mat4.translate(object.move, object.move, [t[0], t[1], 0])
-      mat4.rotateZ(object.move, object.move, r)
-    }
-  })
+}
+
+Scene.prototype.move = function (id, transform) {
+  var self = this
+  var object = self.find(id)
+  var t = transform.translation
+  var r = transform.rotation / 180 * Math.PI
+  mat4.identity(object.move)
+  mat4.translate(object.move, object.move, [t[0], t[1], 0])
+  mat4.rotateZ(object.move, object.move, r)
 }
 
 Scene.prototype.remove = function (id) {
   var self = this
-  var object = _.find(self.objects, ['id', id])
+  var object = self.find(id)
   object.render = false
+}
+
+Scene.prototype.find = function (id) {
+  var self = this
+  return _.find(self.objects, ['id', id])
 }
 
 module.exports = Scene
