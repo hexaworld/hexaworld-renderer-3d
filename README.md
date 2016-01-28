@@ -6,7 +6,7 @@ Render hexaworld games using [`stack.gl`](http://stack.gl). Composes with [`hexa
 
 ### install
 
-Currently in development and not yet published to `npm`. To try it out, first `git clone` [`hexaworld-core`](https://github.com/hexaworld/hexaworld-core) and from inside its folder call
+Currently in development and not yet published to `npm`. To try it out, first `git clone` [`hexaworld-core`](https://github.com/hexaworld/hexaworld-core) and call
 
 ```
 npm link
