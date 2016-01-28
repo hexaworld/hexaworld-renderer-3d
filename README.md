@@ -69,6 +69,14 @@ Simple wrapper for different `stack.gl` cameras.
 
 Builds a collection of `stack.gl` geometries and light sources from a list of `objects`, and enables updating them (through events like `remove` and `move`) and drawing them to the `gl` context.
 
+To construct a scene, just pass a `gl` context.
+
+```javascript
+var scene = Scene(gl)
+```
+
+##### methods
+
 - `scene.build(objects, styles)` Build a scene from a list of `objects` and  `styles`. Every object in the list should have the following attributes:
 
 ```javascript
@@ -97,11 +105,11 @@ And styles should map `type` to a sett of properties, for both `shapes` and `lig
 }
 ```
 
-- `scene.update(view)` Update rendering matries using the provided `view`.
+- `scene.update(view)` Update rendering matrices using the provided `view`.
 
-- `scene.draw(gl)` Draw the scene using the given `gl` context and `view`.
+- `scene.draw()` Draw the scene.
 
-- `scene.move(id, transform)` Move the geometry with the given `id` using `transform`.
+- `scene.move(id, transform)` Move the geometry with the given `id` using the given `transform`.
 
 - `scene.remove(id)` Remove the geometry with the given `id` from the scene.
 
