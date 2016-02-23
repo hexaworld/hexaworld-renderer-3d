@@ -1,61 +1,48 @@
 var shapes = {
   platform: {
-    color: [0.3, 0.3, 0.3],
-    generator: {type: 'extrude', bottom: 1, top: 4},
+    color: [0.3, 0.3, 0.3]
   },
 
   floor: {
     color: [0.2, 0.2, 0.2],
-    lit: false,
-    generator: {type: 'extrude', bottom: 0, top: 1},
+    lit: false
   },
 
   player: {
     color: [0.7, 0.7, 0.7],
-    fog: false,
-    generator: {type: 'icosphere', height: 6, radius: 2},
+    fog: false
   },
 
   bit: {
     color: [0.9, 0.9, 0.9],
-    fog: true,
     hide: true,
-    generator: {type: 'icosphere', height: 5, radius: 0.8},
-    mergeable: false
   },
 
   cue0: {
     color: [0.87, 0.52, 0.23],
-    fog: false,
-    generator: {type: 'icosphere', height: 12, radius: 2},
+    fog: false
   },
 
   cue1: {
     color: [0.00, 0.76, 0.93],
-    fog: false,
-    generator: {type: 'icosphere', height: 12, radius: 2},
+    fog: false
   },
 
   cue2: {
     color: [0.51, 0.79, 0.29],
-    fog: false,
-    generator: {type: 'icosphere', height: 12, radius: 2},
+    fog: false
   },
 
   cue3: {
     color: [0.81, 0.33, 0.34],
-    fog: false,
-    generator: {type: 'icosphere', height: 12, radius: 2},
+    fog: false
   }
 }
 
 var defaults = {
   lit: true,
   fog: true,
-  render: true,
-  mergeable: true,
-  hide: false,
-  shader: 'flat'
+  hide: false
 }
 
 _.forEach(shapes, function (shape) {

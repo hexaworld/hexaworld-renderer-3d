@@ -39,7 +39,7 @@ var game = require('hexaworld-core')({
 })
 
 var renderer = require('./index.js')({
-  game: game, 
+  game: game,
   gl: gl
 })
 

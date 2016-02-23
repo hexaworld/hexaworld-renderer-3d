@@ -10,8 +10,8 @@ function View (type, gl) {
   if (type === 'lookat'){
     var camera = lookat()
     camera.up = [0, 0, 1]
-    camera.target = [0, 0, 0]
-    camera.position = [1, 0, 75]
+    camera.target = [0, 9, 1]
+    camera.position = [0, -60, 30]
     this.camera = camera
   }
 
@@ -24,8 +24,9 @@ View.prototype.update = function () {
   if (this.type === 'orbit') this.camera.tick()
 }
 
-View.prototype.move = function (transform) {
-  var t = transform.translation
-  this.camera.target = [t[0], t[1] + 20, 1]
-  this.camera.position = [t[0], t[1] - 60, 30]
+View.prototype.move = function (mat) {
+  var t = this.camera.target
+  var p = this.camera.position
+  this.camera.target = [mat[6], mat[7] + 9, t[2]]
+  this.camera.position = [mat[6], mat[7] - 60, p[2]]
 }

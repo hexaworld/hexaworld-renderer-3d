@@ -3,13 +3,8 @@ var Geometry = require('gl-geometry')
 var mat4 = require('gl-mat4')
 var eye = require('eye-vector')
 var normals = require('normals')
-var unindex = require('unindex-mesh')
-var reindex = require('mesh-reindex')
-var combine = require('mesh-combine')
-var extrude = require('extrude')
-var icosphere = require('icosphere')
-var camel = require('camelcase')
 var glslify = require('glslify')
+var camel = require('camelcase')
 var distance = require('euclidean-distance')
 
 
@@ -23,128 +18,85 @@ function Scene(gl) {
 
 Scene.prototype.init = function () {
   var self = this
+  this.frame = 0
+  this.props = {}
   this.proj = mat4.create()
   this.view = mat4.create()
   this.eye = new Float32Array(3)
   mat4.perspective(self.proj, Math.PI / 4, self.width / self.height, 0.01, 1000)
 }
 
-Scene.prototype.build = function (objects, styles) {
+Scene.prototype.shapes = function (objects, opts) {
   var self = this
 
-  // set shape attributes on objects
-  _.forEach(objects, function (object) { 
-    var attr = styles.shapes[camel(object.type)]
+  var props = _.uniq(_.flatten(_.map(opts, function (opt) {return _.keys(opt)})))
+  
+  _.forEach(objects, function (object) {
+    var attr = opts[camel(object.type)]
     _.defaults(object, attr)
   })
 
-  // build a simplicial complex for each object
-  _.filter(objects, ['render', true]).forEach(function (object) { 
-    object.complex = self.buildSimplicial(object)
-    object.centroid = object.complex.positions.reduce(function (x, y) {
-      return [x[0] + y[0], x[1] + y[1], x[2] + y[2]]
-    }).map(function (p) {return p / object.complex.positions.length})
-  })
-
-  // iterate over unique types and merge meshes
-  var types = _.uniq(_.map(objects, 'type'))
-  _.forEach(types, function (type) {
-    var filtered = _.filter(objects, ['type', type])
-    var canmerge = _.every(filtered, 'mergeable') & filtered.length > 1
-    if (canmerge) {
-      var merged = self.merge(filtered)
-      _.forEach(filtered, function (object) {object.render = false})
-      objects.push(merged)
-    }
-  })
-
-  // collect light sources
-  var light, style
-  var lights = {colors: [], positions: []}
   _.forEach(objects, function (object) {
-    style = styles.lights[camel(object.type)]
-    if (style) {
-      light = self.buildLight(object, style)
-      lights.colors.push(light.color)
-      lights.positions.push(light.position)
-    }
-  })
-  lights.count = lights.positions.length
-  lights.distances = {}
-  objects.forEach(function (object) {
-    lights.distances[object.id] = lights.positions.map(function (l) {
-      return distance(object.centroid, l)
-    }).reduce(function (x, y) { return Math.min(x, y)})
+    var complex = object.complex
+    object.geometry = Geometry(self.gl)
+    object.geometry.attr('position', complex.positions)
+    object.geometry.attr('normal', normals.vertexNormals(complex.cells, complex.positions))
+    object.geometry.faces(complex.cells)
+    object.animate = mat4.create()
+    object.render = true
   })
 
-  // create shaders
-  var shaders = {
-    flat: Shader(self.gl,
-      glslify('../shaders/flat.vert'),
-      glslify('../shaders/flat.frag').replace(/LIGHTCOUNT/g, lights.count)
-    )
-  }
-
-  // setup geometries
-  _.filter(objects, ['render', true]).forEach(function (object) {
-    object.complex = reindex(unindex(object.complex.positions, object.complex.cells))
-    object.geometry = self.buildGeometry(object.complex)
-    object.shader = shaders[object.shader]
-    object.move = mat4.create()
-  })
-
-  self.objects = objects
-  self.lights = lights
-  self.shaders = shaders
+  self._shapes = objects
+  self.props.shapes = props
 }
 
-Scene.prototype.buildLight = function (object, style) {
-  var p = object.points[0]
-  return {
-    color: style.color,
-    position: [p[0], p[1], style.height]
-  }
-}
-
-Scene.prototype.buildSimplicial = function (object) {
-  var gen = object.generator
-  var complex
-
-  if (gen.type == 'extrude') {
-    complex = extrude(object.points, {top: gen.top, bottom: gen.bottom})
-  }
-
-  if (gen.type == 'icosphere') {
-    complex = icosphere(0)
-    complex.positions = complex.positions.map(function (p) {
-      var t = object.points[0]
-      return [
-        p[0] * gen.radius + t[0], 
-        p[1] * gen.radius + t[1], p[2] * gen.radius + gen.height
-      ]
-    })
-  }
-
-  return complex
-}
-
-Scene.prototype.buildGeometry = function (complex) {
+Scene.prototype.lights = function (objects, opts) {
   var self = this
 
-  var geometry = Geometry(self.gl)
-  geometry.attr('position', complex.positions)
-  geometry.attr('normal', normals.vertexNormals(complex.cells, complex.positions))
-  geometry.faces(complex.cells)
+  var lights = {keys: {}}
 
-  return geometry
+  var props = _.uniq(_.flatten(_.map(opts, function (opt) {return _.keys(opt)})))
+  props.push('position')
+
+  _.forEach(objects, function (object, index) {
+    lights.keys[object.type] = index
+  })
+
+  _.forEach(props, function (prop) {
+    lights[prop] = []
+  })
+
+  _.forEach(objects, function (object) {
+    _.forEach(props, function (prop) {
+      var index = lights.keys[object.type]
+      if (prop === 'position') {
+        lights[prop][index] = [object.move[12], object.move[13], object.move[14]]
+      } else {
+        lights[prop][index] = opts[camel(object.type)][prop]
+      }
+    })
+  })
+
+  // precompute nearest light to each object
+  // objects.forEach(function (object) {
+  //   object.nearestLight = _.map(lights.sources, function (l) {
+  //     return distance(object.centroid, l.position)
+  //   }).reduce(function (x, y) { return Math.min(x, y)})
+  // })
+
+  self._lights = lights
+  self.props.lights = props
 }
 
-Scene.prototype.merge = function (objects) {
-  var ids = _.map(objects, 'id')
-  var combined = combine(_.map(_.filter(objects, 'render'), 'complex'))
-  var merged = {complex: combined, id: 'merged: ' + objects[0].type}
-  _.defaults(merged, objects[0])
-  return merged
+Scene.prototype.shader = function () {
+  var self = this
+
+  var shader = Shader(self.gl,
+    glslify('../shaders/flat.vert'),
+    glslify('../shaders/flat.frag').replace(/LIGHTCOUNT/g, _.keys(self._lights.keys).length)
+  )
+
+  self._shader = shader
 }
 
 Scene.prototype.draw = function () {
@@ -152,60 +104,87 @@ Scene.prototype.draw = function () {
 
   self.gl.enable(self.gl.DEPTH_TEST)
 
-  _.forEach(self.objects, function (object) {
-    if (object.render) {
+  _.forEach(self._shapes, function (shape) {
+    if (shape.render) {
       var passed = true
-      if (object.hide) {
-        var p = object.centroid
-        var e = self.eye
-        var d = distance(p, e)
-        if (d > 200) {
-          passed = self.lights.distances[object.id] < 50
-        } 
-      }
+      // if (object.hide) {
+      //   var p = object.centroid
+      //   var e = self.eye
+      //   var d = distance(p, e)
+      //   if (d > 200) {
+      //     passed = object.nearestLight < 50
+      //   } 
+      // }
       if (passed) {
-        object.geometry.bind(object.shader)
-        object.shader.uniforms.proj = self.proj
-        object.shader.uniforms.view = self.view
-        object.shader.uniforms.eye = self.eye
-        object.shader.uniforms.move = object.move
-        object.shader.uniforms.lit = object.lit 
-        object.shader.uniforms.fog = object.fog
-        object.shader.uniforms.color = object.color
-        object.shader.uniforms.lightPositions = self.lights.positions
-        object.shader.uniforms.lightColors = self.lights.colors
-        object.geometry.draw(self.gl.TRIANGLES)
-        object.geometry.unbind()
+        shape.geometry.bind(self._shader)
+        self._shader.uniforms.proj = self.proj
+        self._shader.uniforms.view = self.view
+        self._shader.uniforms.eye = self.eye
+        self._shader.uniforms.move = shape.move
+        self._shader.uniforms.animate = shape.animate
+        _.forEach(self.props.shapes, function (prop) {
+          self._shader.uniforms[prop] = shape[prop]
+        })
+        _.forEach(self.props.lights, function (prop) {
+          self._shader.uniforms['l' + prop + 'v'] = self._lights[prop]
+        })
+        shape.geometry.draw(self.gl.TRIANGLES)
+        shape.geometry.unbind()
       }
     }
   })
+
 }
 
 Scene.prototype.update = function (view) {
   var self = this
   view.camera.view(self.view)
   eye(self.view, self.eye)
+  this.frame += 1
 }
 
-Scene.prototype.move = function (id, transform) {
+Scene.prototype.move = function (id, cb) {
   var self = this
-  var object = self.find(id)
-  var t = transform.translation
-  var r = transform.rotation / 180 * Math.PI
-  mat4.identity(object.move)
-  mat4.translate(object.move, object.move, [t[0], t[1], 0])
-  mat4.rotateZ(object.move, object.move, r)
+  var shape = self.find(id)
+  var light = self.find(id)
+
+  cb(shape.move)
+
+  // if (mat.length == 9) {
+  //   shape.move[0] = mat[0]
+  //   shape.move[1] = mat[1]
+  //   shape.move[4] = mat[3]
+  //   shape.move[5] = mat[4]
+  //   shape.move[12] = mat[6]
+  //   shape.move[13] = mat[7]
+
+  //   if (self._lights.keys[id]) {
+  //     var ind = self._lights.keys[id]
+  //     self._lights.position[ind][0] = mat[6]
+  //     self._lights.position[ind][1] = mat[7]
+  //   }
+  // }
+
+  // if (mat.length == 16) {
+  //   shape.move = mat
+  //   if (self._lights.keys[id]) {
+  //     var ind = self._lights.keys[id]
+  //     self._lights.position[ind][0] = mat[12]
+  //     self._lights.position[ind][1] = mat[13]
+  //     self._lights.position[ind][2] = mat[14]
+  //   }
+  // }
 }
 
 Scene.prototype.remove = function (id) {
   var self = this
-  var object = self.find(id)
-  object.render = false
+  var shape = self.find(id)
+  shape.render = false
 }
 
 Scene.prototype.find = function (id) {
   var self = this
-  return _.find(self.objects, ['id', id])
+  return _.find(self._shapes, ['id', id])
 }
 
 module.exports = Scene
