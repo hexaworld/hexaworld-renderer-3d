@@ -15,7 +15,7 @@ function extractShapes (sources) {
 
     if (opts.type == 'extrude') {
       var complex = extrude(object.points, {top: opts.top, bottom: opts.bottom})
-      var move = mat4.create()
+      var position = [0, 0, 0]
     }
 
     if (opts.type == 'icosphere') {
@@ -24,13 +24,12 @@ function extractShapes (sources) {
         return [p[0] * opts.radius, p[1] * opts.radius, p[2] * opts.radius]
       })
       var t = object.transform.translation
-      var move = mat4.create()
-      mat4.translate(move, move, [t[0], t[1], opts.height || 0])
+      var position = [t[0], t[1], opts.height || 0]
     }
 
     shapes.push({
       complex: complex,
-      move: move,
+      position: position,
       id: object.id,
       type: object.type
     })
@@ -64,15 +63,14 @@ function extractLights (sources) {
     var opts = config[camel(object.type)]
 
     if (opts.light) {
-      var move = mat4.create()
       var t = object.transform.translation
       var o = opts.offset || [0, 0, 0]
-      mat4.translate(move, move, [t[0] + o[0], t[1] + o[1], (opts.height || 0) + o[2]])
+      var position = [t[0] + o[0], t[1] + o[1], (opts.height || 0) + o[2]]
 
       lights.push({
         id: object.id,
         type: object.type,
-        move: move
+        position: position
       })
     }
   })

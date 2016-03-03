@@ -1,5 +1,5 @@
-var Scene = require('./components/scene.js')
-var View = require('./components/view.js')
+var Scene = require('gl-scene')
+var orbit = require('canvas-orbit-camera')
 var convert = require('./conversion/convert.js')
 
 module.exports = function (opts) {
@@ -8,7 +8,6 @@ module.exports = function (opts) {
   var objects = game.objects
 
   var scene = Scene(gl)
-  var view = View('orbit', gl)
 
   var opts = {
     shapes: require('./styles/shapes.js'), 
@@ -18,30 +17,25 @@ module.exports = function (opts) {
   shapes = convert.shapes(objects)
   lights = convert.lights(objects)
 
-  scene.shapes(shapes, opts.shapes)
-  scene.lights(lights, opts.lights)
-  scene.shader()
+  console.log(lights)
+  console.log(shapes)
+
+  scene.shapes(shapes)
+  scene.init()
+
+  var camera = orbit(gl.canvas)
 
   game.on('draw', function () {
-    view.update()
-    scene.update(view)
-    scene.draw()
+    scene.draw(camera)
   })
 
   game.on('consume', function (e) {
-    scene.remove(e.id, e.type)
+    scene.select(e.id).hide()
   })
 
   game.on('move', function (e) {
-    scene.move(e.id, function (mat) {
-      var m = e.transform.tomat()
-      mat[0] = m[0]
-      mat[1] = m[1]
-      mat[4] = m[3]
-      mat[5] = m[4]
-      mat[12] = m[6]
-      mat[13] = m[7]
-    })
-    if (e.id === 'player' & view.type === 'lookat') view.move(e.transform.tomat())
+    var player = scene.select(e.id)
+    player.position(function (p) {return [e.transform.translation[0], e.transform.translation[1], p[2]]})
+    player.rotation(e.transform.rotation * Math.PI / 180, [0, 0, 1])
   })
 }
