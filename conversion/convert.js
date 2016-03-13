@@ -13,25 +13,37 @@ function extractShapes (sources) {
   sources.forEach(function (object) {
     var opts = config[camel(object.type)]
 
+    var scale, position, complex, t
+
     if (opts.type == 'extrude') {
-      var complex = extrude(object.points, {top: opts.top, bottom: opts.bottom})
-      var position = [0, 0, 0]
+      complex = extrude(object.points, {top: opts.top, bottom: opts.bottom})
+      position = [0, 0, 0]
+    }
+
+    if (opts.type == 'triangle') {
+      complex = extrude([[0, 1], [-0.5, -1], [0.5, -1]], {top: opts.top, bottom: opts.bottom})
+      t = object.transform.translation
+      position = [t[0], t[1], opts.height || 0]
+      scale = [2, 3, 1]
     }
 
     if (opts.type == 'icosphere') {
-      var complex = icosphere(0)
+      complex = icosphere(0)
       complex.positions = complex.positions.map(function (p) {
         return [p[0] * opts.radius, p[1] * opts.radius, p[2] * opts.radius]
       })
-      var t = object.transform.translation
-      var position = [t[0], t[1], opts.height || 0]
+      t = object.transform.translation
+      position = [t[0], t[1], opts.height || 0]
     }
 
     shapes.push({
       complex: complex,
       position: position,
+      scale: scale,
       id: object.id,
-      type: object.type
+      className: object.type,
+      type: object.type,
+      material: 'foggy'
     })
   })
 
@@ -42,7 +54,11 @@ function extractShapes (sources) {
     var canmerge = mergeable & filtered.length > 1
     if (canmerge) {
       var combined = combine(_.map(filtered, 'complex'))
-      var merged = {complex: combined, id: 'merged: ' + filtered[0].type}
+      var merged = {
+        complex: combined, 
+        id: 'merged: ' + filtered[0].type,
+        className: filtered[0].type
+      }
       _.defaults(merged, filtered[0])
       _.remove(shapes, ['type', type])
       shapes.push(merged)
@@ -68,8 +84,8 @@ function extractLights (sources) {
       var position = [t[0] + o[0], t[1] + o[1], (opts.height || 0) + o[2]]
 
       lights.push({
-        id: object.id,
-        type: object.type,
+        id: object.id + '-light',
+        className: object.type + '-light',
         position: position
       })
     }

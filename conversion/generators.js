@@ -14,11 +14,11 @@ module.exports = {
   },
 
   player: {
-    type: 'icosphere', 
-    height: 6, 
-    radius: 2,
+    type: 'triangle', 
+    bottom: 5,
+    top: 5.6,
     light: true,
-    offset: [0, 0, 9]
+    offset: [0, 0, 10]
   },
 
   bit: {

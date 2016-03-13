@@ -1,6 +1,7 @@
 var Scene = require('gl-scene')
-var orbit = require('canvas-orbit-camera')
+var lookat = require('lookat-camera')
 var convert = require('./conversion/convert.js')
+var stylesheet = require('./style-3d.js')
 
 module.exports = function (opts) {
   var gl = opts.gl
@@ -9,21 +10,25 @@ module.exports = function (opts) {
 
   var scene = Scene(gl)
 
-  var opts = {
-    shapes: require('./styles/shapes.js'), 
-    lights: require('./styles/lights.js')
-  }
-
   shapes = convert.shapes(objects)
   lights = convert.lights(objects)
 
-  console.log(lights)
-  console.log(shapes)
-
   scene.shapes(shapes)
+  scene.lights(lights)
+  scene.materials({'foggy': require('./material')})
+  scene.stylesheet(stylesheet)
   scene.init()
 
-  var camera = orbit(gl.canvas)
+  console.log(scene._shapes)
+
+  var camera = lookat()
+
+  var player = scene.select('#player')
+  var playerLight = scene.select('#player-light')
+  scene.select('.cue-0').classed('inactive', true)
+  scene.select('.cue-1').classed('inactive', true)
+  scene.select('.cue-2').classed('inactive', true)
+  scene.select('.cue-3').classed('inactive', true)
 
   game.on('draw', function () {
     scene.draw(camera)
@@ -33,9 +38,36 @@ module.exports = function (opts) {
     scene.select(e.id).hide()
   })
 
-  game.on('move', function (e) {
-    var player = scene.select(e.id)
-    player.position(function (p) {return [e.transform.translation[0], e.transform.translation[1], p[2]]})
-    player.rotation(e.transform.rotation * Math.PI / 180, [0, 0, 1])
+  game.on('enter', function (e) {
+    console.log(e)
   })
+
+  game.on('activate', function (e) {
+    scene.select(e.id).classed('inactive', false)
+    scene.select(e.id + '-light').classed('active', true)
+  })
+
+  var k = 0
+
+  game.on('move', function (e) {
+    var t = e.transform.translation
+    var r = e.transform.rotation * Math.PI / 180
+    player.position(function (p) {
+      return [t[0], t[1], p[2] + Math.sin(k) / 15]
+    })
+    player.rotation(r, [0, 0, 1])
+    playerLight.position(function (p) {
+      return [t[0], t[1], p[2] + Math.sin(k) / 8]
+    })
+    setCamera(t, r)
+    k += 0.2
+  })
+
+  function setCamera (t, r) {
+    var vec1 = [t[0] + Math.sin(-r) * 20, t[1] + Math.cos(-r) * 20]
+    var vec2 = [t[0] - Math.sin(-r) * 50, t[1] - Math.cos(-r) * 50]
+    camera.target = [vec1[0], vec1[1], 5]
+    camera.position = [vec2[0], vec2[1], 20]
+    camera.up = [0, 0, 1]
+  }
 }
