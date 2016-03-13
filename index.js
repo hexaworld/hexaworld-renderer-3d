@@ -15,11 +15,9 @@ module.exports = function (opts) {
 
   scene.shapes(shapes)
   scene.lights(lights)
-  scene.materials({'foggy': require('./material')})
+  scene.materials({'foggy': require('./materials/foggy')})
   scene.stylesheet(stylesheet)
   scene.init()
-
-  console.log(scene._shapes)
 
   var camera = lookat()
 
