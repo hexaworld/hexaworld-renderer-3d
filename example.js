@@ -8,7 +8,7 @@ var config = {
 var map = {
   tiles: [
     {coordinates: [0, 0], paths: [0, 2, 4], cue: {id: 0}},
-    {coordinates: [-1, 0], paths: [0, 4, 5], cue: {id: 1}},
+    {coordinates: [-1, 0], paths: [0, 3, 4, 5], cue: {id: 1}},
     {coordinates: [0, 1], paths: [2, 3, 4]},
     {coordinates: [-1, 1], paths: [4, 5], cue: {id: 2}},
     {coordinates: [1, -1], paths: [2, 3]},
@@ -39,7 +39,7 @@ var game = require('hexaworld-core')({
 })
 
 var renderer = require('./index.js')({
-  game: game, 
+  game: game,
   gl: gl
 })
 

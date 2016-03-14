@@ -20,6 +20,7 @@
     "face-normals": "0.0.0",
     "gl-geometry": "^2.0.0",
     "gl-mat4": "^1.1.4",
+    "gl-scene": "^1.0.1",
     "gl-shader": "^4.1.1",
     "glsl-diffuse-oren-nayar": "^1.0.2",
     "glsl-fog": "0.0.1",
